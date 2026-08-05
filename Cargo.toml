@@ -1,6 +1,18 @@
 [package]
 name = "zero2prod"
 version = "0.1.0"
+authors = ["Milkyway Quasar <azit.ghising#gmail.com>"]
 edition = "2024"
 
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "zero2prod"
+
 [dependencies]
+axum = {version = "0.8.9"}
+tokio = {version = "1.53.1", features = ["full"]}
+reqwest = {version = "0.13.4"}
+
