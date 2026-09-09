@@ -6,17 +6,13 @@ use axum::{
      };
  use serde::{Deserialize, Serialize};
  use tokio::net::TcpListener;
- 
+ use crate::routes::health_check; 
   #[derive(Debug, Serialize, Deserialize)]
    struct FormData {
    email: String,
    name: String,
     }
-    
-    async fn health_check() -> StatusCode {
-       StatusCode::OK
-   }
-   
+     
     async fn subscribe(Form(_user): Form<FormData>) -> StatusCode {
       if _user.email.is_empty() || _user.name.is_empty() {
            return StatusCode::BAD_REQUEST;
