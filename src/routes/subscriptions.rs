@@ -1,4 +1,5 @@
 use axum::{ extract::Form, http::StatusCode};
+use sqlx::PgConnection;
 
 #[derive(serde::Deserialize)]
 pub struct FormData{
@@ -6,6 +7,6 @@ pub struct FormData{
     name: String, 
 }
 
-pub async fn subscribe(_form:Form<FormData>) -> StatusCode {
+pub async fn subscribe(_form:Form<FormData>, _conn: PgConnection) -> StatusCode {
     StatusCode::OK
 }
