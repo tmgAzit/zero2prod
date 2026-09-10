@@ -1,29 +1,25 @@
 use axum::{
        Router,
-         extract::Form,
-        http::StatusCode,
          routing::{get, post},
      };
- use serde::{Deserialize, Serialize};
  use tokio::net::TcpListener;
- use crate::routes::health_check; 
-  #[derive(Debug, Serialize, Deserialize)]
-   struct FormData {
-   email: String,
-   name: String,
-    }
-     
-    async fn subscribe(Form(_user): Form<FormData>) -> StatusCode {
-      if _user.email.is_empty() || _user.name.is_empty() {
-           return StatusCode::BAD_REQUEST;
-        }
-        StatusCode::OK
-    }
-    
-    pub async fn run(listener: TcpListener) -> Result<(), std::io::Error> {
+ use crate::routes::{health_check, subscribe};
+ use sqlx::PgConnection;
+ use std::sync::{Arc, Mutex};
+
+#[derive(Clone)]
+struct AppState {
+    conn: Arc<Mutex<PgConnection>>,
+}
+
+    pub async fn run(listener: TcpListener, pool: PgConnection) -> Result<(), std::io::Error> {
+
+        let state = AppState {
+            conn: Arc::new(Mutex::new(pool)),
+        };
        let router = Router::new()
            .route("/check_health", get(health_check))
-            .route("/subscriptions", post(subscribe));
+            .route("/subscriptions", post(subscribe)).with_state(state.conn);
        tokio::spawn(async move {
            axum::serve(listener, router).await.unwrap();
        });
